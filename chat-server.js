@@ -27,11 +27,7 @@ const socketio = require("socket.io")(http, {
     wsEngine: 'ws'
 });
 
-const chatRooms = [
-    { roomName: 'Room 1', creator: 'Admin', activeUsers: ['Admin'] },
-    { roomName: 'Room 2', creator: 'Admin', activeUsers: ['Admin'] },
-    { roomName: 'Room 3', creator: 'Admin', activeUsers: ['Admin'] }
-];
+const chatRooms = [];
 
 // Attach our Socket.IO server to our HTTP server to listen
 const io = socketio.listen(server);
@@ -89,6 +85,7 @@ io.sockets.on("connection", function (socket) {
                 } else {
                     socket.join(roomName);
                     room.activeUsers.push(userName);
+                    console.log('current active users', room.activeUsers)
                     io.to(roomName).emit('user_joined_room', { userName, roomName });
                     // Emit updated active users list
                     io.to(roomName).emit('active_users', room.activeUsers, room);

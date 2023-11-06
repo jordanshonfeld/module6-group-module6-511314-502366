@@ -88,7 +88,7 @@ io.sockets.on("connection", function (socket) {
                     console.log('current active users', room.activeUsers)
                     io.to(roomName).emit('user_joined_room', { userName, roomName });
                     // Emit updated active users list
-                    io.to(roomName).emit('active_users', room.activeUsers, room);
+                    io.to(roomName).emit('active_users', { activeUsers: room.activeUsers, room });
                     socket.emit('joined_chat_room', { room, activeUsers: room.activeUsers });
                 }
             }

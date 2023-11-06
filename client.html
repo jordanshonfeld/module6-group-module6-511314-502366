@@ -291,18 +291,18 @@
             body.appendChild(row);
             if (currentUser == room.creator){
                row.innerHTML = `<td>${user}</td><td><button>Kick Out</button><button>Ban</button><button>Raise Hand</button></td>`;
-               row.getElementsByTagName('button')[0].addEventListener('click', function() {
+               row.getElementsByTagName('button')[0]?.addEventListener('click', function() {
                   socketio.emit('kick_out_user', { roomName: room.roomName, userName: user });
                });
-               row.getElementsByTagName('button')[1].addEventListener('click', function() {
+               row.getElementsByTagName('button')[1]?.addEventListener('click', function() {
                   socketio.emit('ban_user', { roomName: room.roomName, userName: user });
                });
-               row.getElementsByTagName('button')[2].addEventListener('click', function() {
+               row.getElementsByTagName('button')[2]?.addEventListener('click', function() {
                   socketio.emit('raise_hand', { roomName: room.roomName, userName: user });
                });
             } else {
                row.innerHTML = `<td>${user}</td><td></td>`;
-               row.getElementsByTagName('button')[0].addEventListener('click', function() {
+               row.getElementsByTagName('button')[0]?.addEventListener('click', function() {
                   socketio.emit('raise_hand', { roomName: room.roomName, userName: user });
                });
             }

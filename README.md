@@ -6,4 +6,4 @@ Nate Reyes 511314 nathanreyes32
 
 For the Creative Portion I implemented a raise hand feature where it appears as a yellow box on the side for a couple of seconds. Side note, you cannot add a room with the same name as a previous room.
 
-For full disclosure I hope that whoever is grading can be understanding as my partner ditched me last second to finish the group project in a different repo and I was left stranded. I tried to complete as much of the project as I could on my own. I have put 40+ hours into this project, but I just had some sturggles making progress. Thank you.
+For full disclosure I hope that whoever is grading can be understanding as my partner ditched me last second to finish the group project in a different repo and I was left stranded. I tried to complete as much of the project as I could on my own. I have put 40+ hours into this project, but I just had some struggles making progress. Thank you.

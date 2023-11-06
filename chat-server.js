@@ -28,6 +28,7 @@ const socketio = require("socket.io")(http, {
 });
 
 const chatRooms = [];
+const raisedHands = []
 
 // Attach our Socket.IO server to our HTTP server to listen
 const io = socketio.listen(server);
@@ -38,7 +39,13 @@ io.sockets.on("connection", function (socket) {
     socket.on('message_to_server', function (data) {
         // This callback runs when the server receives a new message from the client.
         console.log("message: " + data["message"]); // log it to the Node.JS output
-        io.sockets.emit("message_to_client", { message: data["message"] }) // broadcast the message to other users
+        io.sockets.emit("message_to_client", data) // broadcast the message to other users
+    });
+
+    socket.on('raise_hand', function (data) {
+        // This callback runs when the server receives a new message from the client.
+        console.log("user raised hand: " + data?.userName); // log it to the Node.JS output
+        io.sockets.emit("user_raised_hand", data) // broadcast the message to other users
     });
 
     socket.on('create_chat_room', function (data) {
@@ -149,13 +156,17 @@ io.sockets.on("connection", function (socket) {
             // Handle the case where the room does not exist
             callback({ status: 'error', message: 'Room does not exist.' });
         } else if (room.bannedUsers && room.bannedUsers.includes(userName)) {
-            // Continue with the ban user logic
+            // unban the user from this room
             room.bannedUsers = room.bannedUsers.filter(user => user !== userName);
-            io.to(roomName).emit('user_left_room', { userName, roomName });
-            io.to(roomName).emit('active_users', room.activeUsers, room);
         } else {
+            // the room exists - and the user was not yet banned - BAN THEM
+            console.log('banning user:', userName)
+            room.bannedUsers.push(userName);
+            io.to(roomName).emit('user_left_room', { userName, roomName });
+            newUsers = room.activeUsers.filter(x => x !== userName)
+            io.to(roomName).emit('active_users', {roomName, activeUsers: newUsers});
             // Handle other cases as needed
-            callback({ status: 'error', message: 'User is not banned.' });
+            // callback({ status: 'error', message: 'User is not banned.' });
         }
     });
 

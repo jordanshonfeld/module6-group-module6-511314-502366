@@ -163,14 +163,16 @@
       var chatRooms = [];
 
       var currentChatRoom = null;
+      let username = null;
 
    /* -------------------------- All the socketio communication -----------------------*/
 
       // Message handling functions
       socketio.on("message_to_client", function(data) {
+         console.log('message to client:', data)
           // Append an HR thematic break and the escaped HTML of the new message
           document.getElementById("chatlog").appendChild(document.createElement("hr"));
-          document.getElementById("chatlog").appendChild(document.createTextNode(data['message']));
+          document.getElementById("chatlog").appendChild(document.createTextNode(`${data["userName"]}: ${data['message']}`));
       });
 
       // display the chat rooms list
@@ -207,21 +209,31 @@
          updateActiveUsers(activeUsers, room);
       });
 
+      // socketio.on('user_raised_hand', function(data) {
+      //    const {  userName, roomName } = data;
+      //    console.log('user raised hand:', userName);
+      //    updateMessageTitle("Chat Room: " + room.roomName);
+      //    updateActiveUsers(activeUsers, room);
+      // });
+
       // Display an error message if the user tries to join a room that doesn't exist
       socketio.on('joined_room_error', function(data) {
          alert(data.message);
       });
 
       // displays the raised hand feature
-      socketio.on('raised_hand', function(data) {
+      socketio.on('user_raised_hand', function(data) {
+         console.log('Creating notification for rasied hand:', data)
          const { userName, roomName } = data;
-         if (currentChatRoom === roomName) {
+
+         // if (currentChatRoom === roomName) {
             // Check if the raised hand is in the currently displayed room
             const notification = document.createElement('div');
             notification.className = 'raise-hand-notification';
-            notification.textContent = `${userName} raised their hand`;
-            document.getElementById('message-sender').appendChild(notification);
-         }
+            notification.textContent = `${userName} raised their hand (${roomName})`;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.remove() }, 2000)
+         // }
       });
 
      /* ------------Below is all the JS functions being used for socket io communication ------------*/
@@ -303,7 +315,7 @@
             } else {
                row.innerHTML = `<td>${user}</td><td></td>`;
                row.getElementsByTagName('button')[0]?.addEventListener('click', function() {
-                  socketio.emit('raise_hand', { roomName: room.roomName, userName: user });
+                  socketio.emit('raise_hand', { roomName: room?.roomName, userName: user });
                });
             }
          }
@@ -312,7 +324,7 @@
       // sends message to the server
       function sendMessage() {
          var msg = document.getElementById("message_sender_input").value;
-         socketio.emit("message_to_server", { message: msg, roomName: currentChatRoom });
+         socketio.emit("message_to_server", { message: msg, roomName: currentChatRoom, userName: username  });
          // Clear the input field after sending the message
          document.getElementById("message_sender_input").value = "";
       }
@@ -346,7 +358,7 @@
 
       // signs in the user
       function signIn(roomId) {
-      const username = document.getElementById('username').value;
+      username = document.getElementById('username').value;
       if (username) {
          // Hide sign-in and display chat interface
          document.getElementById('sign-in-container').style.display = 'none';
